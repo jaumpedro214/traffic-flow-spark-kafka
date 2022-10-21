@@ -1,0 +1,10 @@
+# Install kafka dependencies on spark
+spark-shell --packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.3.0
+
+
+docker exec -it <> /bin/bash 
+
+kafka-topics.sh --create --replication-factor 1 --bootstrap-server localhost:9092 --topic test
+
+kafka-topics.sh --list --bootstrap-server localhost:9092
+

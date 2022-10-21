@@ -48,5 +48,5 @@ for folder, files in json_files.items():
 spark.stop()
 
 # Command to run the script
-# spark-submit --deploy-mode client --master spark://spark:7077 --driver-memory 2G --executor.memory 2G transform_json_to_parquet.py
+# spark-submit --deploy-mode client --master spark://spark:7077 --driver-memory 2G --executor-memory 2G transform_json_to_parquet.py
 # sudo chmod -R 777 data/ 
