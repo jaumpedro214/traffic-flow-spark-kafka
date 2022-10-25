@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 
 
 KAFKA_BOOTSTRAP_SERVERS = "kafka:9092"
-KAFKA_TOPIC = "test"
+KAFKA_TOPIC = "test_topic"
 
 spark = SparkSession.builder.appName("read_test_straeam").getOrCreate()
 
@@ -18,6 +18,7 @@ df = spark.readStream.format("kafka") \
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
     .writeStream \
     .format("console") \
+    .outputMode("append") \
     .start() \
     .awaitTermination()
 

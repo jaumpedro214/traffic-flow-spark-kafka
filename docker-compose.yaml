@@ -16,7 +16,6 @@ services:
     volumes:
       - ./data:/data
       - ./src:/src
-      - ./data/bitnami:/opt/bitnami/spark/data
   spark-worker:
     image: docker.io/bitnami/spark:3.3
     environment:
@@ -29,7 +28,6 @@ services:
     volumes:
       - ./data:/data
       - ./src:/src 
-      - ./data/bitnami:/opt/bitnami/spark/data
 
   # ----------------- #
   # Apache Kafka      #
