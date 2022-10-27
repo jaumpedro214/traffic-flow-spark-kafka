@@ -1,10 +1,7 @@
-# Install kafka dependencies on spark
-spark-shell --packages org.apache.spark:spark-streaming-kafka-0-10_2.12:3.3.0
-
-
 docker exec -it <> /bin/bash 
 
 # Setup test environment
+# Inside the kafka container:
 kafka-topics.sh --create --replication-factor 1 --bootstrap-server localhost:9092 --topic test_topic
 
 kafka-topics.sh --list --bootstrap-server localhost:9092
@@ -13,7 +10,23 @@ kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test_topic -
 
 spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0 /src/read_test_stream.py
 
+# Convert the jsons into parquet file
+Unprotect the folder
+sudo chmod -R 777 data/ 
 
-# Setup field environment
+## JSON to parquet job
+spark-submit --deploy-mode client --master spark://spark:7077 --driver-memory 2G --executor-memory 2G transform_json_to_parquet.py
+
+
+# Setup traffic_sensor topic
+# Inside the kafka container:
 kafka-topics.sh --create --replication-factor 1 --bootstrap-server localhost:9092 --topic traffic_sensor
 
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0 /src/consume_traffic_topic.py
+
+
+# Test write
+
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0 insert_traffic_topic.py
+
+kafka-console-consumer.sh --topic traffic_sensor --bootstrap-server localhost:9092
