@@ -18,6 +18,7 @@ SCHEMA = StructType([
     StructField("ID EQP", LongType()),
     StructField("DATA HORA", TimestampType()),
     StructField("MILESEGUNDO", LongType()),
+    StructField("CLASSIFICAÇÃO", StringType()),
     StructField("FAIXA", LongType()),
     StructField("ID DE ENDEREÇO", LongType()),
     StructField("VELOCIDADE DA VIA", StringType()),

@@ -11,9 +11,7 @@ BASE_PATH = '/data/AGOSTO_2022_PARQUET/'
 files = [os.path.join(BASE_PATH, f) for f in os.listdir(BASE_PATH)]
 
 spark.read.parquet(*files)\
-.repartition(20)\
 .write\
-.option('maxRecordsPerFile', 100000)\
 .mode('overwrite')\
 .parquet(
     '/data/AGOSTO_2022_PARQUET_FINAL/'
