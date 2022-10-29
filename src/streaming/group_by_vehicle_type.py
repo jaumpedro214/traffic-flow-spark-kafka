@@ -2,13 +2,15 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, StringType, LongType, TimestampType
 
-import os
-
 spark = SparkSession.builder\
-.appName('printDataframe')\
+.appName('gb_vehicle_type')\
 .getOrCreate()
 
-BASE_PATH = '/data/AGOSTO_2022/20220801'
+# Reduce logging verbosity
+spark.sparkContext.setLogLevel("WARN")
+
+KAFKA_BOOTSTRAP_SERVERS = "kafka:9092"
+KAFKA_TOPIC = "traffic_sensor"
 SCHEMA = StructType([
     StructField("ID EQP", LongType()),
     StructField("DATA HORA", TimestampType()),
@@ -26,14 +28,33 @@ SCHEMA = StructType([
     StructField("SENTIDO", StringType())
 ])
 
+spark.sparkContext.setLogLevel("WARN")
 
-files = list( os.listdir(BASE_PATH) )
-files = [ os.path.join(BASE_PATH, file) for file in files ]
 
-print(files)
 
-spark\
-    .read\
-    .option("multiline", "true")\
-    .json(files, schema=SCHEMA)\
-    .show(20)
+df_traffic_stream = spark\
+    .readStream.format("kafka")\
+    .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS)\
+    .option("subscribe", KAFKA_TOPIC)\
+    .option("startingOffsets", "earliest")\
+    .load()
+
+df_traffic_stream = df_traffic_stream\
+.select(
+    F.from_json(
+        # decode string as iso-8859-1
+        F.decode(F.col("value"), "iso-8859-1"),
+        SCHEMA
+    ).alias("value")
+)\
+.select("value.*")\
+.select(
+    F.col("CLASSIFICAÇÃO").alias("vehicle_type"),
+)\
+.groupBy("vehicle_type")\
+.count()\
+.writeStream\
+.outputMode("complete")\
+.format("console")\
+.start()\
+.awaitTermination()

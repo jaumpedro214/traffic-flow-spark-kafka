@@ -26,7 +26,7 @@ SCHEMA = StructType([
 ])
 
 spark = SparkSession.builder.appName("write_traffic_sensor_topic").getOrCreate()
-
+spark.sparkContext.setLogLevel("WARN") # Reduce logging verbosity
 
 # Read the parquet file write it to the topic
 # We need to specify the schema in the stream
@@ -34,8 +34,11 @@ spark = SparkSession.builder.appName("write_traffic_sensor_topic").getOrCreate()
 df_traffic_stream = spark.readStream.format("parquet")\
     .schema(SCHEMA)\
     .load(FILE_PATH)\
-    .selectExpr("'mykey' AS key", "to_json(struct(*)) AS value")\
-    .limit(1000)\
+    .withColumn("value", F.to_json( F.struct(F.col("*")) ) )\
+    .withColumn("key", F.lit("key"))\
+    .withColumn("value", F.encode(F.col("value"), "iso-8859-1").cast("binary"))\
+    .withColumn("key", F.encode(F.col("key"), "iso-8859-1").cast("binary"))\
+    .limit(100000)\
 
 # Write the stream to the topic
 df_traffic_stream\
