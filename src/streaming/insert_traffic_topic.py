@@ -38,7 +38,7 @@ df_traffic_stream = spark.readStream.format("parquet")\
     .withColumn("key", F.lit("key"))\
     .withColumn("value", F.encode(F.col("value"), "iso-8859-1").cast("binary"))\
     .withColumn("key", F.encode(F.col("key"), "iso-8859-1").cast("binary"))\
-    .limit(100000)\
+    .limit(500000)\
 
 # Write the stream to the topic
 df_traffic_stream\

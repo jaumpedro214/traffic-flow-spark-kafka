@@ -2,8 +2,9 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, StringType, LongType, TimestampType
 
+
 spark = SparkSession.builder\
-.appName('window_5min')\
+.appName('sliding_30min_5min')\
 .getOrCreate()
 
 # Reduce logging verbosity
@@ -46,16 +47,16 @@ df_traffic_stream = spark\
     .select("value.*")
     
 
-# Count the total number of records in the 5min tumbling window
+# Count the total number of records in the 30min sliding window
+# with a 5min update frequency
+
 df_traffic_stream\
-    .withWatermark("`DATA HORA`", "5 minutes")\
     .groupBy(
-        F.window("DATA HORA", "5 minutes")
+        F.window("DATA HORA", "30 minutes", "5 minutes")
     )\
     .count()\
     .writeStream\
-    .outputMode("append")\
-    .format("console")\
-    .start()\
-    .awaitTermination()
-
+    .queryName("sliding_30min_5min")\
+    .format("memory")\
+    .outputMode("complete")\
+    .start()

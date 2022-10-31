@@ -3,7 +3,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StructField, StringType, LongType, TimestampType
 
 spark = SparkSession.builder\
-.appName('window_5min')\
+.appName('window_5min_vehicle')\
 .getOrCreate()
 
 # Reduce logging verbosity
@@ -50,7 +50,8 @@ df_traffic_stream = spark\
 df_traffic_stream\
     .withWatermark("`DATA HORA`", "5 minutes")\
     .groupBy(
-        F.window("DATA HORA", "5 minutes")
+        F.window("DATA HORA", "5 minutes"),
+        F.col("CLASSIFICAÇÃO")
     )\
     .count()\
     .writeStream\
