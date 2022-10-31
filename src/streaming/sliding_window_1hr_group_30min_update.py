@@ -4,7 +4,7 @@ from pyspark.sql.types import StructType, StructField, StringType, LongType, Tim
 
 
 spark = SparkSession.builder\
-.appName('sliding_30min_5min')\
+.appName('sliding_1hr_30min')\
 .getOrCreate()
 
 # Reduce logging verbosity
@@ -53,7 +53,7 @@ df_traffic_stream = spark\
 
 df_traffic_stream\
     .groupBy(
-        F.window("DATA HORA", "30 minutes", "5 minutes")
+        F.window("DATA HORA", "1 hour", "30 minutes")
     )\
     .count()\
     .orderBy("window")\

@@ -55,6 +55,7 @@ df_traffic_stream\
     )\
     .count()\
     .writeStream\
+    .option("truncate", "false")\
     .outputMode("append")\
     .format("console")\
     .start()\
