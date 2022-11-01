@@ -30,7 +30,7 @@ spark.sparkContext.setLogLevel("WARN") # Reduce logging verbosity
 
 # Read the parquet file write it to the topic
 # We need to specify the schema in the stream
-# and also convert the entries to the format key, value
+# and also convert the entries to the format (key, value)
 df_traffic_stream = spark.readStream.format("parquet")\
     .schema(SCHEMA)\
     .load(FILE_PATH)\
