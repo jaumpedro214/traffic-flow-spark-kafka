@@ -48,14 +48,13 @@ df_traffic_stream = spark\
 
 # Count the total number of records in the 5min tumbling window
 df_traffic_stream\
-    .withWatermark("`DATA HORA`", "5 minutes")\
     .groupBy(
         F.window("DATA HORA", "5 minutes")
     )\
     .count()\
     .writeStream\
     .option("truncate", "false")\
-    .outputMode("append")\
+    .outputMode("update")\
     .format("console")\
     .start()\
     .awaitTermination()
